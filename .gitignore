@@ -1,0 +1,6 @@
+.env
+course-video-lists/*
+downloads/*
+node_modules
+.DS_Store
+.idea
