@@ -28,7 +28,7 @@ CHUNKS=10
 
 ## Set which courses you want to download
 
-In courses.js file push the course that you want to download in the array. There is also a bunch of course urls in file but commented you can easly uncomment and download those are.
+In **courses.js** file push the course that you want to download in the array. There is also a bunch of course urls in file but commented you can easly uncomment and download those are.
 
 ```js
 // Put courses you want in this array
@@ -49,7 +49,7 @@ And for the each course a json file will be created in course-video-lists direct
 ## Download Videos
 
 ```bash
-node scripts/download-from-json.js example.json
+node scripts/download-from-json.js course-video-lists/example.json
 ```
 
 There will be an extra file named **all.json**, which contains all download urls of courses. You can use this file to download all courses in one step but if downloading videos take too much time maybe remaining videos will be expired.
