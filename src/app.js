@@ -1,6 +1,8 @@
 const delay = require("delay");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const fse = require("fs-extra");
+const path = require("path");
 
 const login = require("./login");
 const getCourseVideoList = require("./getCourseVideoList");
@@ -27,17 +29,20 @@ const run = async (courses) => {
         courses[index].lastIndexOf("/") + 1,
         courses[index].length
       ) + ".json";
-    fs.writeFileSync(
-      __dirname +
-        "/../course-video-lists/" +
-        fileName.replace(" ", "-").toLowerCase(),
+    fse.outputFile(
+      path.join(
+        __dirname,
+        "..",
+        "course-video-lists",
+        fileName.replace(" ", "-").toLowerCase()
+      ),
       JSON.stringify(courseVideos)
     );
     videos.push(...courseVideos);
   }
 
   fs.writeFileSync(
-    __dirname + "/../course-video-lists/all.json",
+    path.join(__dirname, "/../", "course-video-lists/all.json"),
     JSON.stringify(videos)
   );
 
