@@ -1,4 +1,6 @@
 const fs = require("fs");
+const fse = require("fs-extra");
+const path = require("path");
 const axios = require("axios");
 const cliProgress = require("cli-progress");
 const { performance } = require("perf_hooks");
@@ -58,11 +60,13 @@ module.exports = async (videos) => {
     promises = [];
     for (let i = 0; i < chunk.length; i++) {
       let video = chunk[i];
-
-      let dir = __dirname + "/../downloads/" + video.filename.split("/")[0];
-      if (fs.existsSync(dir) != true) {
-        fs.mkdirSync(dir);
-      }
+      let dir = path.join(
+        __dirname,
+        "..",
+        "downloads",
+        video.filename.split("/")[0]
+      );
+      fse.ensureDir(dir);
       let filename = video.filename.substr(
         video.filename.search("/") + 1,
         video.filename.length
