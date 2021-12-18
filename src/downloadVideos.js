@@ -61,7 +61,10 @@ module.exports = async (videos) => {
     for (let i = 0; i < chunk.length; i++) {
       let video = chunk[i];
       let dir = path.join(
-        __dirname + "/../downloads/" + video.filename.split("/")[0]
+        __dirname,
+        "..",
+        "downloads",
+        video.filename.split("/")[0]
       );
       fse.ensureDir(dir);
       let filename = video.filename.substr(

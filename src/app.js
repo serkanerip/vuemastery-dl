@@ -42,7 +42,7 @@ const run = async (courses) => {
   }
 
   fs.writeFileSync(
-    path.join(__dirname, "/../", "course-video-lists/all.json"),
+    path.join(__dirname, "..", "course-video-lists/all.json"),
     JSON.stringify(videos)
   );
 
