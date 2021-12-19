@@ -9,9 +9,9 @@ module.exports = async (page, courseURL) => {
   });
   await delay(delayInMS);
 
-  const courseTitle = await page.evaluate(
+  const courseTitle = (await page.evaluate(
     () => document.querySelector("h2.title").textContent
-  );
+  )).replace(/[/\\?%*:|"<>]/g, '-');
   console.log(`Fetching ${courseTitle} course videos links.`);
   const bar1 = new cliProgress.SingleBar(
     {},
@@ -89,7 +89,7 @@ module.exports = async (page, courseURL) => {
     let newString = content.split(`progressive":[`)[1];
     if (!newString) {
       console.log(
-        `Retrying fetch ${index + 1}. video(${videoTitle}) of ${courseTitle}`
+        `\nRetrying fetch ${index + 1}. video(${videoTitle}) of ${courseTitle}`
       );
     }
     let finString = newString.split(']},"lang":"en","sentry":')[0];
@@ -99,7 +99,22 @@ module.exports = async (page, courseURL) => {
       (vid) => vid.quality === process.env.VIDEO_QUALITY
     );
 
-    selectedVideo.filename = `${courseTitle}/${courseTitle}-${index}-${videoTitle}.mp4`;
+    selectedVideo.filename = `${courseTitle}/${courseTitle} - ${index + 1}-${videoTitle}.mp4`;
+
+    let newStringSubtitles = content.split(`"text_tracks":[{`)[1].split(`"lang":"en","url":"`)[1];
+    let finStringSubtitles = "";
+    selectedVideo.urlSubtitles = "";
+    selectedVideo.filenameSubtitles = "";
+    if (!newStringSubtitles) {
+      console.log(
+        `\nNo subtitles for video(${videoTitle}) of ${courseTitle}`
+      );
+    } else {
+      finStringSubtitles = newStringSubtitles.split(`","kind":"captions"`)[0];
+      selectedVideo.urlSubtitles = `https://player.vimeo.com${finStringSubtitles}`;
+      selectedVideo.filenameSubtitles = `${courseTitle}/${courseTitle} - ${index + 1}-${videoTitle}.vtt`;
+    }
+
     videos.push(selectedVideo);
     bar1.update(index + 1);
 

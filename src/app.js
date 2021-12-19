@@ -24,11 +24,7 @@ const run = async (courses) => {
     } catch (err) {
       console.log(err);
     }
-    let fileName =
-      courses[index].substr(
-        courses[index].lastIndexOf("/") + 1,
-        courses[index].length
-      ) + ".json";
+    let fileName = courses[index].split('https://www.vuemastery.com/courses/').pop().split('/')[0] + ".json";
     fse.outputFile(
       path.join(
         __dirname,

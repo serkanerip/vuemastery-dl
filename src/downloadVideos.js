@@ -30,8 +30,9 @@ const downloadVideo = async (url, path) => {
   } catch (err) {
     console.log("");
     console.log("error while downloading " + url);
+    console.log("Destination " + path);
+    console.log(err.toJSON());
     process.exit(-1);
-    console.log(err.response.data);
   }
 
   return new Promise((resolve, reject) => {
@@ -75,6 +76,15 @@ module.exports = async (videos) => {
       promises.push(
         downloadVideo(video.url, dir + "/" + filename.replace("/", "-"))
       );
+      if (video.filenameSubtitles !== "") {
+        let filenameSubtitles = video.filenameSubtitles.substr(
+          video.filenameSubtitles.search("/") + 1,
+          video.filenameSubtitles.length
+        );
+        promises.push(
+          downloadVideo(video.urlSubtitles, dir + "/" + filenameSubtitles.replace("/", "-"))
+        );
+      }
     }
 
     await Promise.all(promises);
