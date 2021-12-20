@@ -1,9 +1,12 @@
 const delay = require("delay");
 const cliProgress = require("cli-progress");
+const fse = require("fs-extra");
+const path = require("path");
 
 module.exports = async (page, courseURL) => {
   const delayInMS = 5000;
   let videos = [];
+  page.setDefaultNavigationTimeout(50000)
   await page.goto(courseURL, {
     waitUntil: "networkidle2",
   });
@@ -11,7 +14,7 @@ module.exports = async (page, courseURL) => {
 
   const courseTitle = (await page.evaluate(
     () => document.querySelector("h2.title").textContent
-  )).replace(/[/\\?%*:|"<>]/g, '-');
+  )).replace(/[/\\?%*:|"<>]/g, '-').replace('w-', 'with');
   console.log(`Fetching ${courseTitle} course videos links.`);
   const bar1 = new cliProgress.SingleBar(
     {},
@@ -68,9 +71,13 @@ module.exports = async (page, courseURL) => {
       );
     }
 
-    const videoTitle = await page.evaluate(
+    // if (item._remoteObject.description.includes("draft")) {
+    //   break;
+    // }
+
+    const videoTitle = (await page.evaluate(
       () => document.querySelector("h1.title").textContent
-    );
+    )).replace(/[/\\?%*:|"<>]/g, '-');
 
     oldIframeSrc = await page.evaluate(
       () =>
@@ -79,6 +86,8 @@ module.exports = async (page, courseURL) => {
           ({ src }) => src
         )[0]
     );
+
+    generateHtmlLesson(page, index, courseTitle, videoTitle);
 
     await Promise.all([
       page.goto("view-source:" + iframeSrc, { waitUntil: "networkidle0" }),
@@ -102,7 +111,6 @@ module.exports = async (page, courseURL) => {
     selectedVideo.filename = `${courseTitle}/${courseTitle} - ${index + 1}-${videoTitle}.mp4`;
 
     let newStringSubtitles = content.split(`"text_tracks":[{`)[1].split(`"lang":"en","url":"`)[1];
-    let finStringSubtitles = "";
     selectedVideo.urlSubtitles = "";
     selectedVideo.filenameSubtitles = "";
     if (!newStringSubtitles) {
@@ -110,7 +118,7 @@ module.exports = async (page, courseURL) => {
         `\nNo subtitles for video(${videoTitle}) of ${courseTitle}`
       );
     } else {
-      finStringSubtitles = newStringSubtitles.split(`","kind":"captions"`)[0];
+      const finStringSubtitles = newStringSubtitles.split(`","kind":"captions"`)[0];
       selectedVideo.urlSubtitles = `https://player.vimeo.com${finStringSubtitles}`;
       selectedVideo.filenameSubtitles = `${courseTitle}/${courseTitle} - ${index + 1}-${videoTitle}.vtt`;
     }
@@ -127,4 +135,28 @@ module.exports = async (page, courseURL) => {
 
   bar1.stop();
   return videos;
+};
+
+const generateHtmlLesson = async (page, index, courseTitle, videoTitle) => {
+  const contentHtml = await page.evaluate(
+    () =>
+      Array.from(
+        document.body.querySelectorAll("#lessonContent .body"),
+        (txt) => txt.innerHTML
+      )[0]
+  );
+
+  const contentHtmlFormatted = contentHtml.replaceAll(/(\n)((?!([\S\s](?!<code))*<\/code>)|(?=<code))/g, '').replaceAll('\n', '<br/>').replaceAll('<\!---->', '');
+
+  let fileNameHtml = `${courseTitle} - ${index + 1}-${videoTitle}.html`;
+  fse.outputFile(
+    path.join(
+      __dirname,
+      "..",
+      "downloads",
+      courseTitle,
+      fileNameHtml
+    ),
+    contentHtmlFormatted
+  );
 };

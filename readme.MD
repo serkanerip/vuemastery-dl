@@ -55,3 +55,11 @@ node scripts/download-from-json.js course-video-lists/example.json
 There will be an extra file named **all.json**, which contains all download urls of courses. You can use this file to download all courses in one step but if downloading videos take too much time maybe remaining videos will be expired.
 
 Videos will be download in to the downloads directory.
+
+## Get Complete Page
+
+```bash
+node indexComplete.js
+```
+
+Html files will be download in to the downloads directory.

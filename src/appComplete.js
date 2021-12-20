@@ -5,7 +5,7 @@ const fse = require("fs-extra");
 const path = require("path");
 
 const login = require("./login");
-const getCourseVideoList = require("./getCourseVideoList");
+const getCourseVideoListComplete = require("./getCourseVideoListComplete");
 
 const run = async (courses) => {
   const browser = await puppeteer.launch({ headless: true });
@@ -15,38 +15,18 @@ const run = async (courses) => {
     height: 1080,
   });
 
-  const videos = [];
   await login(page, process.env.EMAIL, process.env.PASSWORD);
   for (let index = 0; index < courses.length; index++) {
-    let courseVideos = [];
     try {
-      courseVideos = await getCourseVideoList(page, courses[index]);
+      await getCourseVideoListComplete(page, courses[index]);
     } catch (err) {
       console.log(err);
     }
-    let fileName = courses[index].split('https://www.vuemastery.com/courses/').pop().split('/')[0] + ".json";
-    fse.outputFile(
-      path.join(
-        __dirname,
-        "..",
-        "course-video-lists",
-        fileName.replace(" ", "-").toLowerCase()
-      ),
-      JSON.stringify(courseVideos)
-    );
-    videos.push(...courseVideos);
   }
-
-  // fs.writeFileSync(
-  //   path.join(__dirname, "..", "course-video-lists/all.json"),
-  //   JSON.stringify(videos)
-  // );
 
   console.log("Closing browser.");
   await browser.close();
   console.log("Browser closed.");
-
-  // await downloadVideos(videos);
 };
 
 module.exports = {
