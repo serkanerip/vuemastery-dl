@@ -16,7 +16,7 @@ npm install
 cp .env.example .env
 ```
 
-Fill your email and password, and you can change settings like video quality and chunks. This are default values
+Fill your email and password, and you can change settings like video quality and chunks. This are default values :
 
 ```
 EMAIL=
@@ -28,7 +28,7 @@ CHUNKS=10
 
 ## Set which courses you want to download
 
-In **courses.js** file push the course that you want to download in the array. There is also a bunch of course urls in file but commented you can easly uncomment and download those are.
+In `courses.js` file push the course that you want to download in the array. There is also a bunch of course urls in file but commented you can easily uncomment and download those.
 
 ```js
 // Put courses you want in this array
@@ -38,13 +38,27 @@ module.exports = [
 ];
 ```
 
-## Get Courses Video Lists
-
+## Get Course Video Lists And Complete Page
 ```bash
 node index.js
 ```
+To download both the videos and the complete pages.
 
-And for the each course a json file will be created in course-video-lists directory which contains download urls of videos.
+### Get Only Course Video Lists
+
+```bash
+node index.js video
+```
+
+For each course a json file will be created in `course-video-lists` directory which contains the urls for downloading the videos.
+
+### Get Only Complete Pages
+
+```bash
+node index.js complete
+```
+
+Html files will be downloaded into the `downloads` directory.
 
 ## Download Videos
 
@@ -52,14 +66,6 @@ And for the each course a json file will be created in course-video-lists direct
 node scripts/download-from-json.js course-video-lists/example.json
 ```
 
-There will be an extra file named **all.json**, which contains all download urls of courses. You can use this file to download all courses in one step but if downloading videos take too much time maybe remaining videos will be expired.
+There will be an extra file named `all.json`, which contains all download urls of courses. You can use this file to download all courses in one step but if downloading videos take too much time maybe remaining videos will be expired.
 
-Videos will be download in to the downloads directory.
-
-## Get Complete Page
-
-```bash
-node indexComplete.js
-```
-
-Html files will be download in to the downloads directory.
+Videos will be downloaded into the `downloads` directory.
