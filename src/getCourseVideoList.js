@@ -30,8 +30,16 @@ module.exports = async (page, courseURL) => {
     let _items = await page.$$("div.list-item");
 
     item = _items[index];
-    if (item._remoteObject.description.includes("draft")) {
-      break;
+  
+    const classes =  item._remoteObject.description;
+    if (classes.includes("draft")) {
+      console.log("skipping video because its a draft")
+      continue;
+    }
+
+    if (classes.includes("-locked")) {
+      console.log("skipping video because its locked you dont have permission")
+      continue;
     }
 
     await item.click();
@@ -60,10 +68,6 @@ module.exports = async (page, courseURL) => {
       );
     }
 
-    if (item._remoteObject.description.includes("draft")) {
-      break;
-    }
-
     const videoTitle = await page.evaluate(
       () => document.querySelector("h1.title").textContent
     );
@@ -81,14 +85,7 @@ module.exports = async (page, courseURL) => {
       page.waitForNavigation(),
     ]);
 
-    const content = await page.evaluate(
-      () =>
-        Array.from(
-          document.body.querySelectorAll("td.line-content"),
-          (txt) => txt.textContent
-        )[0]
-    );
-
+    const content = await page.evaluate(() => document.body.innerText);
     let newString = content.split(`progressive":[`)[1];
     if (!newString) {
       console.log(
