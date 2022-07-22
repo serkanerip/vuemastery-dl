@@ -100,7 +100,7 @@ module.exports = async (page, courseURL, type) => {
           `\nRetrying fetch ${index + 1}. video(${videoTitle}) of ${courseTitle}`
         );
       }
-      let finString = newString.split(']},"lang":"en","sentry":')[0];
+      let finString = newString.split(']},"lang":')[0];
       let videoVariations = await eval(`[${finString}]`);
 
       let selectedVideo = await videoVariations.find(
