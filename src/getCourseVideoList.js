@@ -133,7 +133,7 @@ module.exports = async (page, courseURL, type) => {
     }
     if (type !== "video") {
 
-      generateCompletePage(page, index, courseTitle, videoTitle);
+      await generateCompletePage(page, index, courseTitle, videoTitle);
     }
 
     bar1.update(index + 1);
